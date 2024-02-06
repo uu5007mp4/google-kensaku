@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google 検索</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f2f2f2;
+    }
+    .container {
+      max-width: 600px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    textarea {
+      width: calc(100%);
+      height: 400px;
+      padding: 100px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 1px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+        #github-link {
+            text-align: center;
+            font-size: 12px;
+            color: #000;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <textarea id="text" placeholder="検索語を入力してください。各行に1つの語句を入力してください。"></textarea>
+    <button onclick="searchGoogle()">検索</button>
+    <button onclick="downloadResults('url')">URL のみ出力</button>
+    <button onclick="downloadResults('keyword')">検索語のみ出力</button>
+    <button onclick="downloadResults('both')">両方を出力</button>
+    <p id="github-link">
+        GitHub: <span id="github-url"><a href="https://github.com/uu5007mp4/Discord-Webhook-" target="_blank">https://github.com/uu5007mp4/Discord-Webhook-</a></span>
+    </p>
+
+  </div>
+
+  <script>
+    var searchResults = [];
+
+    function searchGoogle() {
+      var searchText = document.getElementById("searchText").value.trim();
+      if (searchText !== "") {
+        var searchTerms = searchText.split('\n').filter(Boolean); // 改行で分割して空行を除外
+        searchResults = [];
+        for (var i = 0; i < searchTerms.length; i++) {
+          var searchUrl = "https://www.google.com/search?q=" + encodeURIComponent(searchTerms[i]);
+          searchResults.push({ url: searchUrl, keyword: searchTerms[i] });
+          window.open(searchUrl, "_blank");
+        }
+      } else {
+        alert("検索語を入力してください。");
+      }
+    }
+
+    function downloadResults(option) {
+      if (searchResults.length === 0) {
+        alert("まず検索を行ってください。");
+        return;
+      }
+
+      var textToSave = "";
+      if (option === 'url') {
+        searchResults.forEach(function(result) {
+          textToSave += result.url + "\n";
+        });
+      } else if (option === 'keyword') {
+        searchResults.forEach(function(result) {
+          textToSave += result.keyword + "\n";
+        });
+      } else if (option === 'both') {
+        searchResults.forEach(function(result) {
+          textToSave += result.url + " | " + result.keyword + "\n";
+        });
+      }
+
+      var hiddenElement = document.createElement('a');
+      hiddenElement.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(textToSave);
+      hiddenElement.target = '_blank';
+      hiddenElement.download = 'search_results.txt';
+      hiddenElement.click();
+    }
+  </script>
+</body>
+</html>
